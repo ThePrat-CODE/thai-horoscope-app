@@ -196,3 +196,52 @@ for i in range(12):
     rasi = rasi_names[i]
     planets_in_rasi = ", ".join(birth_chart[i]) if birth_chart[i] else "–"
     st.markdown(f"**ราศี {rasi}**: {planets_in_rasi}")
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+st.subheader("🌌 Birth Chart วงกลมจักรราศี พร้อมสัญลักษณ์ดาว")
+
+# ตั้งชื่อราศี
+rasi_labels = ["เมษ", "พฤษภ", "มิถุน", "กรกฎ", "สิงห์", "กันย์",
+               "ตุล", "พิจิก", "ธนู", "มกร", "กุมภ์", "มีน"]
+
+# สัญลักษณ์ดาว
+planet_symbols = {
+    swe.SUN: "☉ อาทิตย์",
+    swe.MOON: "☽ จันทร์",
+    swe.MERCURY: "☿ พุธ",
+    swe.VENUS: "♀ ศุกร์",
+    swe.MARS: "♂ อังคาร",
+    swe.JUPITER: "♃ พฤหัส",
+    swe.SATURN: "♄ เสาร์",
+    swe.TRUE_NODE: "☊ ราหู"
+}
+
+# เตรียมตำแหน่งดาว
+planet_angles = []
+planet_names = []
+
+for code in planets.values():
+    pos, _ = swe.calc_ut(jd, code)
+    angle = pos[0]
+    planet_angles.append(np.deg2rad(angle))
+    planet_names.append(planet_symbols[code])
+
+# วาดกราฟวงกลม polar
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'}, figsize=(6, 6))
+ax.set_theta_direction(-1)
+ax.set_theta_offset(np.pi / 2)
+ax.set_yticklabels([])
+ax.set_xticks(np.linspace(0, 2*np.pi, 12, endpoint=False))
+ax.set_xticklabels(rasi_labels, fontweight='bold')
+
+# วางตำแหน่งดาว
+for theta, label in zip(planet_angles, planet_names):
+    ax.plot(theta, 1, 'o', label=label)
+    ax.text(theta, 1.08, label, fontsize=10, ha='center', va='center')
+
+# ปิด legend ถ้าไม่ต้องการซ้ำ
+# ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1))
+
+st.pyplot(fig)
