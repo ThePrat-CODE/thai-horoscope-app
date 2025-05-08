@@ -11,7 +11,12 @@ st.markdown("กรอกวันเวลาเกิดของคุณ เ
 # รับข้อมูลผู้ใช้
 col1, col2 = st.columns(2)
 with col1:
-    birth_date = st.date_input("📅 วันเกิด")
+   birth_date = st.date_input(
+    "📅 วันเกิด",
+    value=datetime.date(1995, 1, 1),
+    min_value=datetime.date(1900, 1, 1),
+    max_value=datetime.date.today()
+)
 with col2:
     birth_time = st.time_input("🕰️ เวลาเกิด")
 
